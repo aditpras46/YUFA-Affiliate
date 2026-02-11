@@ -3,524 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Link - Admin Dashboard</title>
+    <title>Yufa Affiliate - Link in Bio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style id="dynamic-styles">
-        /* Style per elemen akan di-inject di sini */
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
         
-        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        .loader {
-            border-top-color: #1e3a8a;
-            animation: spinner 1.5s linear infinite;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
         }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .hidden { display: none; }
-        .modal-bg { background-color: rgba(0,0,0,0.5); }
-        
-        /* Font Selector Styles */
-        .font-option { 
-            transition: all 0.2s; 
-            cursor: pointer; 
-            border: 1px solid #f3f4f6;
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            background: white;
-        }
-        .font-option:hover { background-color: #f9fafb; border-color: #1e3a8a; }
-        .font-option.selected { border-color: #1e3a8a; background-color: #eff6ff; color: #1e3a8a; font-weight: bold; }
-        
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 10px; }
 
-        /* Banner Header */
-        .header-banner {
-            height: 200px;
-            width: 100%;
-            background-size: cover;
-            background-position: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
+        .heading-font {
+            font-family: 'Playfair Display', serif;
         }
-        /* Gradient overlay for banner to content transition */
-        .banner-gradient {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background: linear-gradient(to bottom, transparent, rgba(240, 249, 255, 1));
+
+        /* Bayangan kustom untuk tombol */
+        .btn-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* Transisi hover yang halus */
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="min-h-screen flex flex-col items-center">
 
-    <!-- VIEW: HALAMAN PUBLIK -->
-    <div id="view-public" class="min-h-screen flex flex-col items-center pb-12 px-4 relative overflow-hidden transition-all duration-500 pt-36">
-        <!-- Banner Background -->
-        <div id="pub-banner" class="header-banner">
-            <div id="banner-overlay" class="banner-gradient"></div>
-        </div>
+    <!-- Container Utama -->
+    <div class="w-full max-w-md bg-[#e3ebf3] min-h-screen shadow-2xl relative flex flex-col overflow-hidden">
         
-        <div id="loading-overlay" class="z-20 flex flex-col items-center justify-center h-64 hidden">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-            <p class="text-gray-400 font-medium">Sinkronisasi Cloud...</p>
+        <!-- Header Background -->
+        <div class="h-48 w-full relative overflow-hidden">
+            <!-- Gambar Header -->
+            <img src="https://image2url.com/r2/default/images/1770848563076-99986d4d-ee7c-4d7e-aae8-de4cb6942a13.png" 
+                 alt="Yufa Affiliate Header" 
+                 class="w-full h-full object-cover opacity-90"
+                 onerror="this.src='https://via.placeholder.com/800x400?text=Fashion+Banner'">
+            <!-- Overlay Gradien -->
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#e3ebf3]"></div>
         </div>
 
-        <div id="public-content" class="z-10 text-center max-w-md w-full mt-4">
-            <div class="relative inline-block mb-6">
-                <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto bg-gray-200">
-                    <img id="pub-image" src="" alt="Profile" class="w-full h-full object-cover">
-                </div>
+        <!-- Profil & Info Utama -->
+        <div class="relative -mt-16 flex flex-col items-center px-6">
+            <!-- Foto Profil -->
+            <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex items-center justify-center">
+                <img src="https://image2url.com/r2/default/images/1770848607784-2488cb14-426d-4621-90e3-14f939b1089e.png" 
+                     alt="Yufa Affiliate Profile" 
+                     class="w-full h-full object-contain p-1"
+                     onerror="this.src='https://via.placeholder.com/150?text=YUFA'">
             </div>
-            
-            <h1 id="pub-name" class="mb-2"></h1>
-            <p id="pub-bio" class="px-4 leading-relaxed mb-6"></p>
 
-            <!-- Social Media Icons -->
-            <div id="pub-socials" class="flex justify-center gap-6 mb-10 text-gray-700">
-                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="facebook"></i></a>
-                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="instagram"></i></a>
-                <a href="#" class="hover:opacity-70 transition-opacity">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+            <!-- Nama & Bio -->
+            <div class="text-center mt-6">
+                <h1 class="heading-font text-3xl text-[#003366] font-bold uppercase tracking-tight">Yufa Affiliate</h1>
+                <p class="text-gray-600 mt-2 text-sm leading-relaxed max-w-xs mx-auto italic">
+                    "Fashion pilihan terbaik untuk menjadi pilihan"
+                </p>
+            </div>
+
+            <!-- Daftar Link (Tombol) -->
+            <div class="w-full mt-10 space-y-4 pb-12">
+                
+                <!-- Link Shopee #1 -->
+                <a href="https://s.shopee.co.id/6pvBRSAXlo" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
+                    <i class="fas fa-shopping-bag"></i>
+                    1. Gamis Lebaran Anak Motif Terbaru
                 </a>
-                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="youtube"></i></a>
-            </div>
 
-            <div id="pub-links-container" class="flex flex-col gap-4 w-full px-2">
-                <!-- Links Rendered Here -->
-            </div>
-        </div>
-
-        <button onclick="navigate('login')" class="fixed bottom-6 right-6 bg-white p-3 rounded-full shadow-xl text-blue-900 border border-blue-100 z-30 opacity-40 hover:opacity-100 transition-opacity">
-            <i data-lucide="settings"></i>
-        </button>
-    </div>
-
-    <!-- VIEW: LOGIN -->
-    <div id="view-login" class="min-h-screen bg-gray-50 flex items-center justify-center px-4 hidden">
-        <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-            <div class="text-center mb-8">
-                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
-                    <i data-lucide="lock"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">Admin Login</h2>
-            </div>
-            <form id="login-form" class="space-y-6">
-                <input type="password" id="password-input" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sandi: *****">
-                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 rounded-2xl shadow-lg">Masuk</button>
-            </form>
-            <button onclick="navigate('public')" class="w-full mt-4 text-gray-400 text-sm">Kembali</button>
-        </div>
-    </div>
-
-    <!-- VIEW: DASHBOARD -->
-    <div id="view-dashboard" class="min-h-screen bg-gray-100 flex flex-col hidden pb-10">
-        <header class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-20">
-            <div class="flex items-center gap-2">
-                <button onclick="navigate('public')" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="arrow-left"></i></button>
-                <h2 class="font-bold text-lg text-gray-800">Admin Dashboard</h2>
-            </div>
-            <div class="flex gap-2">
-                <button id="btn-save" onclick="saveToCloud()" class="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md flex items-center gap-2">
-                    <i data-lucide="save" class="w-4"></i> Simpan
-                </button>
-                <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500"><i data-lucide="log-out"></i></button>
-            </div>
-        </header>
-
-        <div class="max-w-2xl mx-auto w-full p-4 md:p-6 space-y-6">
-            <!-- Profil Dashboard -->
-            <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
-                <h3 class="font-bold flex items-center gap-2 text-gray-700"><i data-lucide="user" class="w-4 text-blue-600"></i> Konten Profil</h3>
-                
-                <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                    <div class="flex flex-col gap-4 items-center">
-                        <div class="group relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 bg-gray-50 shadow-sm">
-                            <img id="dash-img-preview" src="" class="w-full h-full object-cover">
-                            <button onclick="openEditModal('profile_image')" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                <i data-lucide="camera" class="text-white w-5"></i>
-                            </button>
-                        </div>
-                        <button onclick="openEditModal('profile_banner')" class="text-[10px] font-bold text-blue-600 uppercase flex items-center gap-1 hover:underline">
-                            <i data-lucide="image" class="w-3"></i> Ganti Banner
-                        </button>
-                    </div>
-                    <div class="flex-1 space-y-4 w-full">
-                        <div class="flex justify-between items-center border-b border-gray-50 pb-2">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Nama</label>
-                                <span id="dash-name-text" class="font-bold text-gray-800"></span>
-                            </div>
-                            <button onclick="openEditModal('profile_name')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="edit-3" class="w-4"></i></button>
-                        </div>
-                        <div class="flex justify-between items-start border-b border-gray-50 pb-2">
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Bio</label>
-                                <span id="dash-bio-text" class="text-sm text-gray-600 line-clamp-1"></span>
-                            </div>
-                            <button onclick="openEditModal('profile_bio')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="edit-3" class="w-4"></i></button>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Warna Latar</label>
-                                <div id="dash-bg-preview" class="w-6 h-6 rounded border mt-1 shadow-inner"></div>
-                            </div>
-                            <button onclick="openEditModal('theme_bg')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="palette" class="w-4"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Links Dashboard -->
-            <section class="space-y-4">
-                <div class="flex justify-between items-center px-2">
-                    <h3 class="font-bold flex items-center gap-2 text-gray-700"><i data-lucide="link" class="w-4 text-blue-600"></i> Daftar Tautan</h3>
-                    <button onclick="addLink()" class="bg-white border px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 shadow-sm transition-all">+ Tambah</button>
-                </div>
-                <div id="dash-links-list" class="space-y-3"></div>
-            </section>
-        </div>
-    </div>
-
-    <!-- MODAL EDIT TERPADU -->
-    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-        <div class="modal-bg absolute inset-0" onclick="closeEditModal()"></div>
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modal-content">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h3 id="modal-title" class="font-bold text-gray-800">Edit Pengaturan</h3>
-                <button onclick="closeEditModal()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x" class="w-5"></i></button>
-            </div>
-            <div id="modal-body" class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scroll">
-                <!-- Injected content -->
-            </div>
-            <div class="p-6 border-t bg-gray-50 flex gap-3">
-                <button onclick="closeEditModal()" class="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-500">Batal</button>
-                <button onclick="confirmEdit()" class="flex-1 py-3 bg-blue-900 text-white rounded-xl text-sm font-bold hover:bg-blue-800 shadow-lg">Simpan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOTIFIKASI -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm shadow-2xl transition-all opacity-0 pointer-events-none z-50">Tersimpan</div>
-
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHD2kQHzLuPjaW8VauwwRcpN_cJroQmpBSlqIzq0NJA4C9vBZAInQ4d49P2zjLjkrDEw/exec';
-        const ADMIN_PASS = 'aditpras46';
-
-        const FONT_LIST = [
-            'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Oswald', 'Raleway', 'Playfair Display', 'Lora',
-            'Nunito', 'Merriweather', 'Ubuntu', 'PT Sans', 'Noto Sans', 'Rubik', 'Arvo', 'Work Sans', 'Quicksand', 'Fira Sans',
-            'Karla', 'Inconsolata', 'Libre Baskerville', 'Muli', 'Prompt', 'Heebo', 'Assistant', 'Exo 2', 'Bebas Neue', 'Josefin Sans',
-            'Dancing Script', 'Pacifico', 'Caveat', 'Satisfy', 'Sacramento', 'Yellowtail', 'Great Vibes', 'Alex Brush', 'Allura', 'Pinyon Script',
-            'Kaushan Script', 'Parisienne', 'Cookie', 'Clicker Script', 'Homemade Apple', 'Italianno', 'Niconne', 'Stalemate', 'WindSong', 'Tangerine'
-        ];
-
-        let appState = {
-            profile: {
-                image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
-                banner: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
-                name: { text: 'John Donovan', font: 'Playfair Display', color: '#1e3a8a', size: 'text-2xl' },
-                bio: { text: 'Your awesome bio or professional title text goes here.', font: 'Inter', color: '#475569', size: 'text-sm' }
-            },
-            theme: { bgColor: '#f0f9ff' },
-            links: [
-                { id: 1, title: 'LINK #1 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
-                { id: 2, title: 'LINK #2 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
-                { id: 3, title: 'LINK #3 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
-                { id: 4, title: 'LINK #4 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
-                { id: 5, title: 'LINK #5 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' }
-            ]
-        };
-
-        let isLoggedIn = false;
-        let currentEditing = { type: null, id: null };
-        let selectedFontInModal = 'Inter';
-
-        async function init() {
-            lucide.createIcons();
-            await fetchData();
-            applyAllStyles();
-            renderAll();
-        }
-
-        async function fetchData() {
-            showLoading(true);
-            try {
-                const res = await fetch(SCRIPT_URL);
-                const data = await res.json();
-                
-                if (data.profile) {
-                    if (data.profile.image) appState.profile.image = data.profile.image;
-                    if (data.profile.banner) appState.profile.banner = data.profile.banner;
-                    
-                    if (data.profile.name) {
-                        if (typeof data.profile.name === 'string') appState.profile.name.text = data.profile.name;
-                        else appState.profile.name = { ...appState.profile.name, ...data.profile.name };
-                    }
-
-                    if (data.profile.bio) {
-                        if (typeof data.profile.bio === 'string') appState.profile.bio.text = data.profile.bio;
-                        else appState.profile.bio = { ...appState.profile.bio, ...data.profile.bio };
-                    }
-                }
-
-                if (data.links && Array.isArray(data.links)) {
-                    appState.links = data.links.map(l => ({
-                        font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base', ...l
-                    }));
-                }
-                
-                if (data.theme) appState.theme = { ...appState.theme, ...data.theme };
-
-            } catch (e) { console.error("Data fetch error:", e); }
-            finally { showLoading(false); renderAll(); applyAllStyles(); }
-        }
-
-        async function saveToCloud() {
-            const btn = document.getElementById('btn-save');
-            btn.disabled = true;
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(appState) });
-                showToast("Tersimpan!");
-            } catch (e) { showToast("Gagal!"); }
-            finally { btn.disabled = false; }
-        }
-
-        function applyAllStyles() {
-            const styleTag = document.getElementById('dynamic-styles');
-            const fontsToLoad = new Set();
-            
-            fontsToLoad.add(appState.profile.name?.font || 'Playfair Display');
-            fontsToLoad.add(appState.profile.bio?.font || 'Inter');
-            appState.links.forEach(l => fontsToLoad.add(l.font || 'Inter'));
-
-            const fontImport = Array.from(fontsToLoad)
-                .filter(f => f && typeof f === 'string')
-                .map(f => `family=${f.replace(/\s/g, '+')}:wght@400;700`)
-                .join('&');
-
-            if (fontImport) {
-                const linkId = 'font-loader';
-                let link = document.getElementById(linkId);
-                if (!link) {
-                    link = document.createElement('link');
-                    link.id = linkId;
-                    link.rel = 'stylesheet';
-                    document.head.appendChild(link);
-                }
-                link.href = `https://fonts.googleapis.com/css2?${fontImport}&display=swap`;
-            }
-
-            let css = `
-                #view-public { background-color: ${appState.theme.bgColor || '#f0f9ff'}; }
-                #pub-name { font-family: '${appState.profile.name?.font || 'Playfair Display'}', serif; color: ${appState.profile.name?.color || '#1e3a8a'}; }
-                #pub-bio { font-family: '${appState.profile.bio?.font || 'Inter'}', sans-serif; color: ${appState.profile.bio?.color || '#475569'}; }
-                #pub-banner { background-image: url('${appState.profile.banner}'); }
-                #banner-overlay { background: linear-gradient(to bottom, transparent, ${appState.theme.bgColor || '#f0f9ff'}); }
-            `;
-
-            appState.links.forEach(l => {
-                css += `
-                    #link-${l.id} { 
-                        font-family: '${l.font || 'Inter'}', sans-serif; 
-                        color: ${l.color || '#ffffff'}; 
-                        background-color: ${l.bgColor || '#003366'}; 
-                    }
-                `;
-            });
-            styleTag.innerHTML = css;
-        }
-
-        function renderAll() {
-            // Update Public View
-            document.getElementById('pub-image').src = appState.profile.image || '';
-            document.getElementById('pub-name').innerText = appState.profile.name?.text || '';
-            document.getElementById('pub-name').className = `font-bold mb-2 ${appState.profile.name?.size || 'text-2xl'}`;
-            document.getElementById('pub-bio').innerText = appState.profile.bio?.text || '';
-            document.getElementById('pub-bio').className = `px-4 leading-relaxed mb-8 ${appState.profile.bio?.size || 'text-sm'}`;
-
-            const container = document.getElementById('pub-links-container');
-            container.innerHTML = appState.links.filter(l => l.active).map(l => `
-                <a href="${l.url}" id="link-${l.id}" target="_blank" class="py-4 px-6 rounded-lg shadow-sm font-bold text-center transition-all ${l.size || 'text-base'}">
-                    ${l.title}
+                <!-- Link Shopee #2 -->
+                <a href="https://s.shopee.co.id/4AuQHyOKhQ" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
+                    <i class="fas fa-shopping-bag"></i>
+                    Koleksi Fashion Pilihan #2
                 </a>
-            `).join('');
 
-            // Update Dashboard View
-            if (isLoggedIn) {
-                document.getElementById('dash-img-preview').src = appState.profile.image || '';
-                document.getElementById('dash-name-text').innerText = appState.profile.name?.text || '';
-                document.getElementById('dash-bio-text').innerText = appState.profile.bio?.text || '';
-                document.getElementById('dash-bg-preview').style.backgroundColor = appState.theme.bgColor || '#f0f9ff';
+            </div>
 
-                const list = document.getElementById('dash-links-list');
-                list.innerHTML = appState.links.map(l => `
-                    <div class="bg-white p-4 rounded-2xl border flex items-center gap-4 ${!l.active && 'opacity-50 grayscale'}">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">${l.title}</h4>
-                            <p class="text-[10px] text-gray-400">${l.url}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" ${l.active ? 'checked' : ''} onchange="toggleLink(${l.id})">
-                                <div class="w-8 h-4 bg-gray-200 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
-                            </label>
-                            <button onclick="openEditModal('link', ${l.id})" class="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><i data-lucide="edit-3" class="w-4"></i></button>
-                            <button onclick="deleteLink(${l.id})" class="p-2 text-gray-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-                lucide.createIcons();
-            }
-        }
+            <!-- Footer Branding -->
+            <div class="pb-8 text-xs text-gray-400 text-center">
+                &copy; 2026 Yufa Affiliate. Terhubung melalui Shopee Affiliate.
+            </div>
+        </div>
 
-        function openEditModal(type, id = null) {
-            currentEditing = { type, id };
-            const modal = document.getElementById('edit-modal');
-            const content = document.getElementById('modal-content');
-            const body = document.getElementById('modal-body');
-            const title = document.getElementById('modal-title');
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => content.classList.replace('scale-95', 'scale-100'), 10);
-            setTimeout(() => content.classList.replace('opacity-0', 'opacity-100'), 10);
+    </div>
 
-            let data = null;
-            if (type === 'profile_name') { title.innerText = 'Edit Nama'; data = appState.profile.name; }
-            else if (type === 'profile_bio') { title.innerText = 'Edit Bio'; data = appState.profile.bio; }
-            else if (type === 'link') { title.innerText = 'Edit Tautan'; data = appState.links.find(l => l.id === id); }
-            else if (type === 'profile_image') {
-                title.innerText = 'URL Foto Profil';
-                body.innerHTML = `<input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${appState.profile.image}">`;
-                return;
-            } else if (type === 'profile_banner') {
-                title.innerText = 'URL Banner Atas';
-                body.innerHTML = `<input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${appState.profile.banner}">`;
-                return;
-            } else if (type === 'theme_bg') {
-                title.innerText = 'Warna Latar Belakang';
-                body.innerHTML = `<input type="color" id="m-color" class="w-full h-24 rounded-2xl cursor-pointer" value="${appState.theme.bgColor}">`;
-                return;
-            }
-
-            selectedFontInModal = data.font || 'Inter';
-
-            body.innerHTML = `
-                <div class="space-y-6">
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Teks / Judul</label>
-                        <input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${data.text || data.title || ''}">
-                        ${type === 'link' ? `<input type="text" id="m-url" class="w-full p-4 bg-gray-50 border rounded-2xl mt-2 outline-none" value="${data.url}" placeholder="URL">` : ''}
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Gaya Font</label>
-                        <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2 custom-scroll border p-2 rounded-2xl bg-gray-50">
-                            ${FONT_LIST.map(f => `
-                                <div onclick="selectFont('${f}')" id="font-${f.replace(/\s/g, '-')}" class="font-option text-sm ${selectedFontInModal === f ? 'selected' : ''}" style="font-family: '${f}'">${f}</div>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Warna Utama</label>
-                            <input type="color" id="m-color" class="w-full h-12 rounded-xl cursor-pointer" value="${data.color || data.bgColor || '#000000'}">
-                        </div>
-                        ${type === 'link' ? `
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Warna Kotak Tombol</label>
-                            <input type="color" id="m-color-bg" class="w-full h-12 rounded-xl cursor-pointer" value="${data.bgColor || '#003366'}">
-                        </div>
-                        ` : ''}
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Ukuran</label>
-                            <select id="m-size" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
-                                <option value="text-xs" ${data.size === 'text-xs' ? 'selected' : ''}>XS</option>
-                                <option value="text-sm" ${data.size === 'text-sm' ? 'selected' : ''}>SM</option>
-                                <option value="text-base" ${data.size === 'text-base' ? 'selected' : ''}>Normal</option>
-                                <option value="text-lg" ${data.size === 'text-lg' ? 'selected' : ''}>Besar (LG)</option>
-                                <option value="text-xl" ${data.size === 'text-xl' ? 'selected' : ''}>Besar (XL)</option>
-                                <option value="text-2xl" ${data.size === 'text-2xl' ? 'selected' : ''}>Ekstra Besar</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function selectFont(f) {
-            selectedFontInModal = f;
-            document.querySelectorAll('.font-option').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`font-${f.replace(/\s/g, '-')}`).classList.add('selected');
-        }
-
-        function confirmEdit() {
-            const vText = document.getElementById('m-text')?.value;
-            const vUrl = document.getElementById('m-url')?.value;
-            const vColor = document.getElementById('m-color')?.value;
-            const vColorBg = document.getElementById('m-color-bg')?.value;
-            const vSize = document.getElementById('m-size')?.value;
-
-            if (currentEditing.type === 'profile_image') appState.profile.image = vText;
-            else if (currentEditing.type === 'profile_banner') appState.profile.banner = vText;
-            else if (currentEditing.type === 'theme_bg') appState.theme.bgColor = vColor;
-            else if (currentEditing.type === 'profile_name') {
-                appState.profile.name = { text: vText, font: selectedFontInModal, color: vColor, size: vSize };
-            } else if (currentEditing.type === 'profile_bio') {
-                appState.profile.bio = { text: vText, font: selectedFontInModal, color: vColor, size: vSize };
-            } else if (currentEditing.type === 'link') {
-                appState.links = appState.links.map(l => l.id === currentEditing.id ? {
-                    ...l, title: vText, url: vUrl, font: selectedFontInModal, color: vColor, bgColor: vColorBg, size: vSize
-                } : l);
-            }
-
-            applyAllStyles();
-            renderAll();
-            closeEditModal();
-        }
-
-        function closeEditModal() {
-            const m = document.getElementById('edit-modal');
-            const c = document.getElementById('modal-content');
-            c.classList.replace('scale-100', 'scale-95');
-            c.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => m.classList.add('hidden'), 200);
-        }
-
-        function toggleLink(id) { appState.links = appState.links.map(l => l.id === id ? {...l, active: !l.active} : l); renderAll(); }
-        function deleteLink(id) { appState.links = appState.links.filter(l => l.id !== id); renderAll(); }
-        function addLink() { const id = Date.now(); appState.links.push({ id, title: 'Baru', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' }); renderAll(); openEditModal('link', id); }
-        
-        function navigate(v) { 
-            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden')); 
-            document.getElementById('view-' + v).classList.remove('hidden'); 
-            if(v === 'dashboard' && !isLoggedIn) navigate('login'); 
-            renderAll(); 
-        }
-        
-        function logout() { isLoggedIn = false; navigate('public'); }
-        function showLoading(s) { document.getElementById('loading-overlay').classList.toggle('hidden', !s); }
-        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.classList.replace('opacity-0', 'opacity-100'); setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 2000); }
-
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (document.getElementById('password-input').value === ADMIN_PASS) { isLoggedIn = true; navigate('dashboard'); }
-            else { alert("Sandi salah!"); }
-        });
-
-        window.onload = init;
-    </script>
 </body>
 </html>
