@@ -87,6 +87,7 @@
                 warnaTulisan: '#F5F5F5',
                 linkStyle: 'rough',
                 customStyleUrl: '',
+                gasUrl: '', // URL Google Apps Script
                 socialLinks: { ig: '', fb: '', tiktok: '', shopee: '' }
             }
         };
@@ -94,7 +95,6 @@
         // --- Core Logic ---
 
         async function init() {
-            // RULE 3: Auth dulu
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
@@ -103,20 +103,17 @@
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // Subscribe ke seluruh akun untuk tampilan spreadsheet di dashboard
                     subscribeToAllAccounts();
                 }
                 render();
             });
         }
 
-        // Ambil semua data registrasi (Spreadsheet View)
         function subscribeToAllAccounts() {
             const accountsRef = collection(db, 'artifacts', appId, 'public', 'data', 'accounts');
             onSnapshot(accountsRef, (snapshot) => {
                 state.allAccounts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                // Jika sedang login, sinkronkan data profil dari akun spesifik
                 if (state.currentUser) {
                     const myAccount = state.allAccounts.find(acc => acc.id === state.currentUser);
                     if (myAccount) {
@@ -129,17 +126,44 @@
             }, (err) => console.error("Sync Error:", err));
         }
 
+        async function syncToGAS(actionType, payload) {
+            if (!state.settings.gasUrl) return;
+            
+            try {
+                // Pengiriman data ke Google Apps Script menggunakan POST
+                await fetch(state.settings.gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: actionType,
+                        username: state.currentUser || payload.username,
+                        data: payload,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                console.log("Google Apps Script Sync Sukses");
+            } catch (e) {
+                console.error("Gagal sinkronisasi ke GAS:", e);
+            }
+        }
+
         async function saveToCloud() {
             if (!state.currentUser) return;
             const accountDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'accounts', state.currentUser);
-            await setDoc(accountDocRef, {
+            const payload = {
                 settings: state.settings,
                 links: state.links,
                 lastUpdated: new Date().toISOString()
-            }, { merge: true });
+            };
+            
+            await setDoc(accountDocRef, payload, { merge: true });
+            
+            // Sinkronkan ke Google Apps Script juga
+            syncToGAS('UPDATE_PROFILE', payload);
         }
 
-        // --- View Handlers ---
+        // --- View Handlers (Terdaftar di Window agar bisa dipanggil dari HTML) ---
 
         window.navigate = (page) => {
             state.currentPage = page;
@@ -170,16 +194,20 @@
                 return;
             }
 
-            await setDoc(accountDocRef, {
+            const payload = {
                 username,
                 password,
                 createdAt: new Date().toISOString(),
                 settings: { ...state.settings, namaToko },
                 links: []
-            });
+            };
 
-            alert('Berhasil mendaftar! Data tersimpan di Cloud.');
-            navigate('login');
+            await setDoc(accountDocRef, payload);
+            
+            syncToGAS('REGISTER', payload);
+
+            alert('Berhasil mendaftar! Data tersimpan di Cloud & Spreadsheet.');
+            window.navigate('login');
         };
 
         window.handleLogin = async (e) => {
@@ -194,10 +222,18 @@
                 state.currentUser = username;
                 state.settings = snap.data().settings || state.settings;
                 state.links = snap.data().links || [];
-                navigate('dashboard');
+                
+                syncToGAS('LOGIN', { username, timestamp: new Date().toISOString() });
+                
+                window.navigate('dashboard');
             } else {
                 alert('Username atau Password salah!');
             }
+        };
+
+        window.logoutAdmin = () => {
+            state.currentUser = null;
+            window.navigate('bio');
         };
 
         window.addLink = () => {
@@ -220,6 +256,13 @@
 
         window.updateSocial = (key, value) => {
             state.settings.socialLinks[key] = value;
+            saveToCloud();
+        };
+
+        window.applyTemplate = (tpl) => {
+            state.settings.warnaBg = tpl.bg;
+            state.settings.warnaTulisan = tpl.text;
+            state.settings.linkStyle = tpl.style;
             saveToCloud();
         };
 
@@ -263,7 +306,7 @@
                 <div class="flex flex-col items-center min-h-screen py-12 px-6 relative overflow-hidden">
                     ${settings.fotoBackground ? `<img src="${settings.fotoBackground}" class="absolute inset-0 w-full h-full object-cover opacity-50 z-0">` : ''}
                     <div class="w-full max-w-md relative z-10 flex flex-col items-center">
-                        <button onclick="navigate('login')" class="absolute top-0 right-0 p-2 rounded-full bg-black/10 hover:bg-black/20 transition-all">
+                        <button onclick="window.navigate('login')" class="absolute top-0 right-0 p-2 rounded-full bg-black/10 hover:bg-black/20 transition-all">
                             <i data-lucide="log-in" style="color: ${settings.warnaTulisan}"></i>
                         </button>
                         <div class="mb-12 flex flex-col items-center text-center">
@@ -284,16 +327,16 @@
             return `
                 <div class="flex flex-col items-center justify-center min-h-screen px-6 bg-[#0E0B31] text-white">
                     <div class="w-full max-w-md">
-                        <button onclick="navigate('bio')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
+                        <button onclick="window.navigate('bio')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
                         <div class="bg-gradient-to-br from-[#1A1A40] to-[#100A31] p-10 rounded-3xl shadow-2xl border border-white/5">
                             <h2 class="text-3xl font-bold text-center mb-10">Spreadsheet Login</h2>
-                            <form onsubmit="handleLogin(event)" class="space-y-6">
+                            <form onsubmit="window.handleLogin(event)" class="space-y-6">
                                 <input name="username" type="text" placeholder="Username" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-4 outline-none focus:border-blue-500" required>
                                 <input name="password" type="password" placeholder="Password" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-4 outline-none focus:border-blue-500" required>
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all">Masuk Akun</button>
                             </form>
                             <div class="mt-8 text-center pt-6 border-t border-white/5">
-                                <button onclick="navigate('register')" class="text-sm text-blue-400 font-bold hover:underline">Daftar Akun Baru</button>
+                                <button onclick="window.navigate('register')" class="text-sm text-blue-400 font-bold hover:underline">Daftar Akun Baru</button>
                             </div>
                         </div>
                     </div>
@@ -305,10 +348,10 @@
             return `
                 <div class="flex flex-col items-center justify-center min-h-screen px-6 bg-[#0E0B31] text-white">
                     <div class="w-full max-w-md">
-                        <button onclick="navigate('login')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
+                        <button onclick="window.navigate('login')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
                         <div class="bg-gradient-to-br from-[#1A1A40] to-[#100A31] p-10 rounded-3xl shadow-2xl border border-white/5">
                             <h2 class="text-3xl font-bold text-center mb-10">Registrasi Akun</h2>
-                            <form onsubmit="handleRegister(event)" class="space-y-4">
+                            <form onsubmit="window.handleRegister(event)" class="space-y-4">
                                 <input name="username" type="text" placeholder="Username" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
                                 <input name="namaToko" type="text" placeholder="Nama Toko / Judul Bio" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
                                 <input name="password" type="password" placeholder="Password" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
@@ -336,7 +379,7 @@
                             <label class="block text-[10px] uppercase text-white/40 mb-3 font-bold">URL / Link</label>
                             <input id="new-link-url" type="text" placeholder="https://..." class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-4 outline-none text-white">
                         </div>
-                        <button onclick="addLink()" class="bg-blue-600 text-white rounded-lg p-[18px] hover:bg-blue-500 shadow-lg"><i data-lucide="plus"></i></button>
+                        <button onclick="window.addLink()" class="bg-blue-600 text-white rounded-lg p-[18px] hover:bg-blue-500 shadow-lg"><i data-lucide="plus"></i></button>
                     </div>
                     <div class="space-y-4">
                         ${links.map((link, i) => `
@@ -348,16 +391,16 @@
                                         <p class="text-sm text-blue-400 font-mono italic opacity-70">${link.url}</p>
                                     </div>
                                 </div>
-                                <button onclick="deleteLink(${link.id})" class="p-3 text-white/20 hover:text-red-400"><i data-lucide="trash-2"></i></button>
+                                <button onclick="window.deleteLink(${link.id})" class="p-3 text-white/20 hover:text-red-400"><i data-lucide="trash-2"></i></button>
                             </div>
                         `).join('')}
                     </div>
                 `;
             } else if (activeTab === 'spreadsheet') {
                 content = `
-                    <h1 class="text-4xl font-light mb-10">Database View (Spreadsheet)</h1>
+                    <h1 class="text-4xl font-light mb-10 text-white">Database View (Cloud)</h1>
                     <div class="glass rounded-2xl overflow-hidden shadow-2xl">
-                        <table class="w-full text-left text-sm">
+                        <table class="w-full text-left text-sm text-white">
                             <thead class="bg-white/5 text-white/60 uppercase text-[10px] font-black">
                                 <tr>
                                     <th class="px-6 py-4">Username</th>
@@ -378,7 +421,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <p class="mt-6 text-white/20 text-xs italic">*Data ini disinkronkan secara real-time dari Cloud Database.</p>
                 `;
             } else if (activeTab === 'settings') {
                 content = `
@@ -387,22 +429,15 @@
                         <div class="grid grid-cols-2 gap-8 bg-white/5 p-8 rounded-2xl border border-white/5">
                             <div class="space-y-4">
                                 <label class="block text-[10px] font-bold text-white/40 uppercase">Judul Bio</label>
-                                <input type="text" value="${settings.namaToko}" onchange="updateSetting('namaToko', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
+                                <input type="text" value="${settings.namaToko}" onchange="window.updateSetting('namaToko', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
                                 <label class="block text-[10px] font-bold text-white/40 uppercase">Deskripsi</label>
-                                <input type="text" value="${settings.deskripsi}" onchange="updateSetting('deskripsi', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
+                                <input type="text" value="${settings.deskripsi}" onchange="window.updateSetting('deskripsi', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
                             </div>
                             <div class="space-y-4">
                                 <label class="block text-[10px] font-bold text-white/40 uppercase">URL Foto Profil</label>
-                                <input type="text" value="${settings.fotoProfil}" onchange="updateSetting('fotoProfil', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
-                                <label class="block text-[10px] font-bold text-white/40 uppercase">Warna BG</label>
-                                <input type="color" value="${settings.warnaBg}" onchange="updateSetting('warnaBg', this.value)" class="w-full h-10 bg-transparent border-none cursor-pointer rounded">
-                            </div>
-                        </div>
-                        <div class="bg-white/5 p-8 rounded-2xl border border-white/5">
-                            <label class="block text-[10px] font-bold text-white/40 uppercase mb-4">Sosial Media</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="Instagram URL" value="${settings.socialLinks.ig}" onchange="updateSocial('ig', this.value)" class="bg-[#1A1A40] border border-white/10 rounded p-3 text-sm text-white">
-                                <input type="text" placeholder="TikTok URL" value="${settings.socialLinks.tiktok}" onchange="updateSocial('tiktok', this.value)" class="bg-[#1A1A40] border border-white/10 rounded p-3 text-sm text-white">
+                                <input type="text" value="${settings.fotoProfil}" onchange="window.updateSetting('fotoProfil', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
+                                <label class="block text-[10px] font-bold text-white/40 uppercase">GAS URL</label>
+                                <input type="text" value="${settings.gasUrl || ''}" placeholder="URL Google Apps Script" onchange="window.updateSetting('gasUrl', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white text-xs">
                             </div>
                         </div>
                     </div>
@@ -411,7 +446,6 @@
 
             return `
                 <div class="flex min-h-screen bg-[#0E0B31] text-white overflow-hidden">
-                    <!-- Sidebar -->
                     <div class="w-72 bg-gradient-to-b from-[#3D4DA0] to-[#606FC0] flex flex-col py-10 shadow-2xl z-20">
                         <div class="flex flex-col items-center mb-12 px-6 text-center">
                             <div class="w-24 h-24 rounded-full border-4 border-white mb-4 object-cover shadow-lg overflow-hidden bg-white/10 flex items-center justify-center">
@@ -421,33 +455,27 @@
                             <p class="text-[10px] text-white/50 uppercase tracking-widest mt-1 truncate w-full px-4">${state.currentUser}</p>
                         </div>
                         <nav class="flex-1 px-4 space-y-1">
-                            <div onclick="setTab('panel')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'panel' ? 'bg-white/10 font-bold' : 'text-white/50'} transition-all">
+                            <div onclick="window.setTab('panel')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'panel' ? 'bg-white/10 font-bold' : 'text-white/50'}">
                                 ${activeTab === 'panel' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
                                 <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
                             </div>
-                            <div onclick="setTab('spreadsheet')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'spreadsheet' ? 'bg-white/10 font-bold' : 'text-white/50'} transition-all">
+                            <div onclick="window.setTab('spreadsheet')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'spreadsheet' ? 'bg-white/10 font-bold' : 'text-white/50'}">
                                 ${activeTab === 'spreadsheet' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
                                 <i data-lucide="table"></i><span>Data Log</span>
                             </div>
-                            <div onclick="setTab('settings')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'settings' ? 'bg-white/10 font-bold' : 'text-white/50'} transition-all">
+                            <div onclick="window.setTab('settings')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'settings' ? 'bg-white/10 font-bold' : 'text-white/50'}">
                                 ${activeTab === 'settings' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
                                 <i data-lucide="settings"></i><span>Pengaturan</span>
                             </div>
                         </nav>
-                        <div class="px-8 py-4 flex items-center gap-2 text-[10px] text-blue-200/40 italic"><i data-lucide="cloud" size="12"></i> Cloud Spreadsheet Active</div>
-                        <button onclick="navigate('bio')" class="mt-auto flex items-center gap-4 text-white/60 hover:text-white px-8 py-4 group font-bold">
+                        <button onclick="window.logoutAdmin()" class="mt-auto flex items-center gap-4 text-white/60 hover:text-white px-8 py-4 group font-bold">
                             <i data-lucide="log-in" class="rotate-180"></i> <span class="font-medium">Keluar</span>
                         </button>
                     </div>
 
-                    <!-- Main Content -->
                     <div class="flex-1 flex flex-col">
                         <div class="h-16 flex items-center justify-end px-10 border-b border-white/5">
-                            <div class="relative group mr-4">
-                                <input type="text" class="bg-[#1A1A40] border border-blue-900 rounded-full py-1.5 pl-4 pr-10 text-xs w-56 outline-none" placeholder="Search Database...">
-                                <i data-lucide="search" class="absolute right-3 top-2 text-blue-400 w-4 h-4"></i>
-                            </div>
-                            <button onclick="navigate('bio')" class="text-white/40 hover:text-white transition-colors p-1"><i data-lucide="x"></i></button>
+                            <button onclick="window.navigate('bio')" class="text-white/40 hover:text-white transition-colors p-1"><i data-lucide="x"></i></button>
                         </div>
                         <div class="flex-1 overflow-y-auto p-12 custom-scrollbar">${content}</div>
                     </div>
