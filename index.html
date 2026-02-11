@@ -3,487 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Link Pro - Cloud Database</title>
-    <!-- Tailwind CSS -->
+    <title>Bio Link - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style id="dynamic-styles">
+        /* Style per elemen akan di-inject di sini */
+    </style>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
         
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.5s ease;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        /* Gaya Kotak Link */
-        .style-rough { clip-path: polygon(0% 12%, 1% 2%, 99% 4%, 100% 15%, 98% 85%, 99% 98%, 2% 100%, 0% 90%); }
-        .style-grunge { clip-path: polygon(2% 10%, 15% 3%, 35% 8%, 55% 2%, 75% 9%, 98% 1%, 100% 45%, 97% 95%, 80% 90%, 50% 98%, 20% 92%, 1% 100%, 0% 50%); }
-        .style-metallic { clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%); }
-        .style-layered { clip-path: polygon(10% 0%, 100% 0%, 100% 85%, 90% 100%, 0% 100%, 0% 15%); }
-        
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         .loader {
-            border-top-color: #3b82f6;
-            animation: spinner 1s linear infinite;
+            border-top-color: #1e3a8a;
+            animation: spinner 1.5s linear infinite;
         }
         @keyframes spinner {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .hidden { display: none; }
+        .modal-bg { background-color: rgba(0,0,0,0.5); }
+        
+        /* Font Selector Styles */
+        .font-option { 
+            transition: all 0.2s; 
+            cursor: pointer; 
+            border: 1px solid #f3f4f6;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            background: white;
+        }
+        .font-option:hover { background-color: #f9fafb; border-color: #1e3a8a; }
+        .font-option.selected { border-color: #1e3a8a; background-color: #eff6ff; color: #1e3a8a; font-weight: bold; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 10px; }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        /* Banner Header */
+        .header-banner {
+            height: 200px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        /* Gradient overlay for banner to content transition */
+        .banner-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, rgba(240, 249, 255, 1));
         }
     </style>
 </head>
-<body class="bg-[#B5AD9E]">
+<body class="bg-gray-50">
 
-    <div id="app">
-        <div class="flex flex-col items-center justify-center min-h-screen bg-[#0E0B31] text-white">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-600 h-12 w-12 mb-4"></div>
-            <p class="animate-pulse text-sm text-blue-400">Menghubungkan ke Cloud Spreadsheet...</p>
+    <!-- VIEW: HALAMAN PUBLIK -->
+    <div id="view-public" class="min-h-screen flex flex-col items-center pb-12 px-4 relative overflow-hidden transition-all duration-500 pt-36">
+        <!-- Banner Background -->
+        <div id="pub-banner" class="header-banner">
+            <div id="banner-overlay" class="banner-gradient"></div>
+        </div>
+        
+        <div id="loading-overlay" class="z-20 flex flex-col items-center justify-center h-64 hidden">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+            <p class="text-gray-400 font-medium">Sinkronisasi Cloud...</p>
+        </div>
+
+        <div id="public-content" class="z-10 text-center max-w-md w-full mt-4">
+            <div class="relative inline-block mb-6">
+                <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto bg-gray-200">
+                    <img id="pub-image" src="" alt="Profile" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <h1 id="pub-name" class="mb-2"></h1>
+            <p id="pub-bio" class="px-4 leading-relaxed mb-6"></p>
+
+            <!-- Social Media Icons -->
+            <div id="pub-socials" class="flex justify-center gap-6 mb-10 text-gray-700">
+                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="facebook"></i></a>
+                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="instagram"></i></a>
+                <a href="#" class="hover:opacity-70 transition-opacity">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                </a>
+                <a href="#" class="hover:opacity-70 transition-opacity"><i data-lucide="youtube"></i></a>
+            </div>
+
+            <div id="pub-links-container" class="flex flex-col gap-4 w-full px-2">
+                <!-- Links Rendered Here -->
+            </div>
+        </div>
+
+        <button onclick="navigate('login')" class="fixed bottom-6 right-6 bg-white p-3 rounded-full shadow-xl text-blue-900 border border-blue-100 z-30 opacity-40 hover:opacity-100 transition-opacity">
+            <i data-lucide="settings"></i>
+        </button>
+    </div>
+
+    <!-- VIEW: LOGIN -->
+    <div id="view-login" class="min-h-screen bg-gray-50 flex items-center justify-center px-4 hidden">
+        <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <div class="text-center mb-8">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
+                    <i data-lucide="lock"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Admin Login</h2>
+            </div>
+            <form id="login-form" class="space-y-6">
+                <input type="password" id="password-input" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sandi: *****">
+                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 rounded-2xl shadow-lg">Masuk</button>
+            </form>
+            <button onclick="navigate('public')" class="w-full mt-4 text-gray-400 text-sm">Kembali</button>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    <!-- VIEW: DASHBOARD -->
+    <div id="view-dashboard" class="min-h-screen bg-gray-100 flex flex-col hidden pb-10">
+        <header class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-20">
+            <div class="flex items-center gap-2">
+                <button onclick="navigate('public')" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="arrow-left"></i></button>
+                <h2 class="font-bold text-lg text-gray-800">Admin Dashboard</h2>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-save" onclick="saveToCloud()" class="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md flex items-center gap-2">
+                    <i data-lucide="save" class="w-4"></i> Simpan
+                </button>
+                <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500"><i data-lucide="log-out"></i></button>
+            </div>
+        </header>
 
-        // Konfigurasi
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bio-link-spreadsheet-v1';
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        <div class="max-w-2xl mx-auto w-full p-4 md:p-6 space-y-6">
+            <!-- Profil Dashboard -->
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                <h3 class="font-bold flex items-center gap-2 text-gray-700"><i data-lucide="user" class="w-4 text-blue-600"></i> Konten Profil</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                    <div class="flex flex-col gap-4 items-center">
+                        <div class="group relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 bg-gray-50 shadow-sm">
+                            <img id="dash-img-preview" src="" class="w-full h-full object-cover">
+                            <button onclick="openEditModal('profile_image')" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                <i data-lucide="camera" class="text-white w-5"></i>
+                            </button>
+                        </div>
+                        <button onclick="openEditModal('profile_banner')" class="text-[10px] font-bold text-blue-600 uppercase flex items-center gap-1 hover:underline">
+                            <i data-lucide="image" class="w-3"></i> Ganti Banner
+                        </button>
+                    </div>
+                    <div class="flex-1 space-y-4 w-full">
+                        <div class="flex justify-between items-center border-b border-gray-50 pb-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Nama</label>
+                                <span id="dash-name-text" class="font-bold text-gray-800"></span>
+                            </div>
+                            <button onclick="openEditModal('profile_name')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="edit-3" class="w-4"></i></button>
+                        </div>
+                        <div class="flex justify-between items-start border-b border-gray-50 pb-2">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Bio</label>
+                                <span id="dash-bio-text" class="text-sm text-gray-600 line-clamp-1"></span>
+                            </div>
+                            <button onclick="openEditModal('profile_bio')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="edit-3" class="w-4"></i></button>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase block">Warna Latar</label>
+                                <div id="dash-bg-preview" class="w-6 h-6 rounded border mt-1 shadow-inner"></div>
+                            </div>
+                            <button onclick="openEditModal('theme_bg')" class="p-2 text-blue-600 bg-blue-50 rounded-lg"><i data-lucide="palette" class="w-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        // Global State
-        let state = {
-            currentPage: 'bio', 
-            activeTab: 'panel',
-            currentUser: null, // Username yang sedang login
-            allAccounts: [], // Data seluruh user untuk 'Spreadsheet View'
-            links: [],
-            settings: {
-                namaToko: 'Guest User',
-                deskripsi: 'Selamat datang di Bio Link',
-                fotoProfil: '',
-                fotoBackground: '',
-                warnaBg: '#B5AD9E',
-                warnaTulisan: '#F5F5F5',
-                linkStyle: 'rough',
-                customStyleUrl: '',
-                gasUrl: '', // URL Google Apps Script
-                socialLinks: { ig: '', fb: '', tiktok: '', shopee: '' }
-            }
+            <!-- Links Dashboard -->
+            <section class="space-y-4">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="font-bold flex items-center gap-2 text-gray-700"><i data-lucide="link" class="w-4 text-blue-600"></i> Daftar Tautan</h3>
+                    <button onclick="addLink()" class="bg-white border px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 shadow-sm transition-all">+ Tambah</button>
+                </div>
+                <div id="dash-links-list" class="space-y-3"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT TERPADU -->
+    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-bg absolute inset-0" onclick="closeEditModal()"></div>
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modal-content">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 id="modal-title" class="font-bold text-gray-800">Edit Pengaturan</h3>
+                <button onclick="closeEditModal()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x" class="w-5"></i></button>
+            </div>
+            <div id="modal-body" class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scroll">
+                <!-- Injected content -->
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex gap-3">
+                <button onclick="closeEditModal()" class="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-500">Batal</button>
+                <button onclick="confirmEdit()" class="flex-1 py-3 bg-blue-900 text-white rounded-xl text-sm font-bold hover:bg-blue-800 shadow-lg">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm shadow-2xl transition-all opacity-0 pointer-events-none z-50">Tersimpan</div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHD2kQHzLuPjaW8VauwwRcpN_cJroQmpBSlqIzq0NJA4C9vBZAInQ4d49P2zjLjkrDEw/exec';
+        const ADMIN_PASS = 'aditpras46';
+
+        const FONT_LIST = [
+            'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Oswald', 'Raleway', 'Playfair Display', 'Lora',
+            'Nunito', 'Merriweather', 'Ubuntu', 'PT Sans', 'Noto Sans', 'Rubik', 'Arvo', 'Work Sans', 'Quicksand', 'Fira Sans',
+            'Karla', 'Inconsolata', 'Libre Baskerville', 'Muli', 'Prompt', 'Heebo', 'Assistant', 'Exo 2', 'Bebas Neue', 'Josefin Sans',
+            'Dancing Script', 'Pacifico', 'Caveat', 'Satisfy', 'Sacramento', 'Yellowtail', 'Great Vibes', 'Alex Brush', 'Allura', 'Pinyon Script',
+            'Kaushan Script', 'Parisienne', 'Cookie', 'Clicker Script', 'Homemade Apple', 'Italianno', 'Niconne', 'Stalemate', 'WindSong', 'Tangerine'
+        ];
+
+        let appState = {
+            profile: {
+                image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
+                banner: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
+                name: { text: 'John Donovan', font: 'Playfair Display', color: '#1e3a8a', size: 'text-2xl' },
+                bio: { text: 'Your awesome bio or professional title text goes here.', font: 'Inter', color: '#475569', size: 'text-sm' }
+            },
+            theme: { bgColor: '#f0f9ff' },
+            links: [
+                { id: 1, title: 'LINK #1 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
+                { id: 2, title: 'LINK #2 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
+                { id: 3, title: 'LINK #3 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
+                { id: 4, title: 'LINK #4 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' },
+                { id: 5, title: 'LINK #5 GOES HERE', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' }
+            ]
         };
 
-        // --- Core Logic ---
+        let isLoggedIn = false;
+        let currentEditing = { type: null, id: null };
+        let selectedFontInModal = 'Inter';
 
         async function init() {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    subscribeToAllAccounts();
-                }
-                render();
-            });
+            lucide.createIcons();
+            await fetchData();
+            applyAllStyles();
+            renderAll();
         }
 
-        function subscribeToAllAccounts() {
-            const accountsRef = collection(db, 'artifacts', appId, 'public', 'data', 'accounts');
-            onSnapshot(accountsRef, (snapshot) => {
-                state.allAccounts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        async function fetchData() {
+            showLoading(true);
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
                 
-                if (state.currentUser) {
-                    const myAccount = state.allAccounts.find(acc => acc.id === state.currentUser);
-                    if (myAccount) {
-                        state.settings = myAccount.settings || state.settings;
-                        state.links = myAccount.links || [];
-                        if (state.currentPage === 'bio') document.body.style.backgroundColor = state.settings.warnaBg;
+                if (data.profile) {
+                    if (data.profile.image) appState.profile.image = data.profile.image;
+                    if (data.profile.banner) appState.profile.banner = data.profile.banner;
+                    
+                    if (data.profile.name) {
+                        if (typeof data.profile.name === 'string') appState.profile.name.text = data.profile.name;
+                        else appState.profile.name = { ...appState.profile.name, ...data.profile.name };
+                    }
+
+                    if (data.profile.bio) {
+                        if (typeof data.profile.bio === 'string') appState.profile.bio.text = data.profile.bio;
+                        else appState.profile.bio = { ...appState.profile.bio, ...data.profile.bio };
                     }
                 }
-                render();
-            }, (err) => console.error("Sync Error:", err));
-        }
 
-        async function syncToGAS(actionType, payload) {
-            if (!state.settings.gasUrl) return;
-            
-            try {
-                // Pengiriman data ke Google Apps Script menggunakan POST
-                await fetch(state.settings.gasUrl, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: actionType,
-                        username: state.currentUser || payload.username,
-                        data: payload,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                console.log("Google Apps Script Sync Sukses");
-            } catch (e) {
-                console.error("Gagal sinkronisasi ke GAS:", e);
-            }
+                if (data.links && Array.isArray(data.links)) {
+                    appState.links = data.links.map(l => ({
+                        font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base', ...l
+                    }));
+                }
+                
+                if (data.theme) appState.theme = { ...appState.theme, ...data.theme };
+
+            } catch (e) { console.error("Data fetch error:", e); }
+            finally { showLoading(false); renderAll(); applyAllStyles(); }
         }
 
         async function saveToCloud() {
-            if (!state.currentUser) return;
-            const accountDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'accounts', state.currentUser);
-            const payload = {
-                settings: state.settings,
-                links: state.links,
-                lastUpdated: new Date().toISOString()
-            };
-            
-            await setDoc(accountDocRef, payload, { merge: true });
-            
-            // Sinkronkan ke Google Apps Script juga
-            syncToGAS('UPDATE_PROFILE', payload);
+            const btn = document.getElementById('btn-save');
+            btn.disabled = true;
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(appState) });
+                showToast("Tersimpan!");
+            } catch (e) { showToast("Gagal!"); }
+            finally { btn.disabled = false; }
         }
 
-        // --- View Handlers (Terdaftar di Window agar bisa dipanggil dari HTML) ---
-
-        window.navigate = (page) => {
-            state.currentPage = page;
-            if (page === 'bio') {
-                document.body.style.backgroundColor = state.settings.warnaBg;
-            } else {
-                document.body.style.backgroundColor = '#0E0B31';
-            }
-            render();
-        };
-
-        window.setTab = (tab) => {
-            state.activeTab = tab;
-            render();
-        };
-
-        window.handleRegister = async (e) => {
-            e.preventDefault();
-            const username = e.target.username.value;
-            const password = e.target.password.value;
-            const namaToko = e.target.namaToko.value;
-
-            const accountDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'accounts', username);
-            const check = await getDoc(accountDocRef);
+        function applyAllStyles() {
+            const styleTag = document.getElementById('dynamic-styles');
+            const fontsToLoad = new Set();
             
-            if (check.exists()) {
-                alert('Username sudah terdaftar!');
+            fontsToLoad.add(appState.profile.name?.font || 'Playfair Display');
+            fontsToLoad.add(appState.profile.bio?.font || 'Inter');
+            appState.links.forEach(l => fontsToLoad.add(l.font || 'Inter'));
+
+            const fontImport = Array.from(fontsToLoad)
+                .filter(f => f && typeof f === 'string')
+                .map(f => `family=${f.replace(/\s/g, '+')}:wght@400;700`)
+                .join('&');
+
+            if (fontImport) {
+                const linkId = 'font-loader';
+                let link = document.getElementById(linkId);
+                if (!link) {
+                    link = document.createElement('link');
+                    link.id = linkId;
+                    link.rel = 'stylesheet';
+                    document.head.appendChild(link);
+                }
+                link.href = `https://fonts.googleapis.com/css2?${fontImport}&display=swap`;
+            }
+
+            let css = `
+                #view-public { background-color: ${appState.theme.bgColor || '#f0f9ff'}; }
+                #pub-name { font-family: '${appState.profile.name?.font || 'Playfair Display'}', serif; color: ${appState.profile.name?.color || '#1e3a8a'}; }
+                #pub-bio { font-family: '${appState.profile.bio?.font || 'Inter'}', sans-serif; color: ${appState.profile.bio?.color || '#475569'}; }
+                #pub-banner { background-image: url('${appState.profile.banner}'); }
+                #banner-overlay { background: linear-gradient(to bottom, transparent, ${appState.theme.bgColor || '#f0f9ff'}); }
+            `;
+
+            appState.links.forEach(l => {
+                css += `
+                    #link-${l.id} { 
+                        font-family: '${l.font || 'Inter'}', sans-serif; 
+                        color: ${l.color || '#ffffff'}; 
+                        background-color: ${l.bgColor || '#003366'}; 
+                    }
+                `;
+            });
+            styleTag.innerHTML = css;
+        }
+
+        function renderAll() {
+            // Update Public View
+            document.getElementById('pub-image').src = appState.profile.image || '';
+            document.getElementById('pub-name').innerText = appState.profile.name?.text || '';
+            document.getElementById('pub-name').className = `font-bold mb-2 ${appState.profile.name?.size || 'text-2xl'}`;
+            document.getElementById('pub-bio').innerText = appState.profile.bio?.text || '';
+            document.getElementById('pub-bio').className = `px-4 leading-relaxed mb-8 ${appState.profile.bio?.size || 'text-sm'}`;
+
+            const container = document.getElementById('pub-links-container');
+            container.innerHTML = appState.links.filter(l => l.active).map(l => `
+                <a href="${l.url}" id="link-${l.id}" target="_blank" class="py-4 px-6 rounded-lg shadow-sm font-bold text-center transition-all ${l.size || 'text-base'}">
+                    ${l.title}
+                </a>
+            `).join('');
+
+            // Update Dashboard View
+            if (isLoggedIn) {
+                document.getElementById('dash-img-preview').src = appState.profile.image || '';
+                document.getElementById('dash-name-text').innerText = appState.profile.name?.text || '';
+                document.getElementById('dash-bio-text').innerText = appState.profile.bio?.text || '';
+                document.getElementById('dash-bg-preview').style.backgroundColor = appState.theme.bgColor || '#f0f9ff';
+
+                const list = document.getElementById('dash-links-list');
+                list.innerHTML = appState.links.map(l => `
+                    <div class="bg-white p-4 rounded-2xl border flex items-center gap-4 ${!l.active && 'opacity-50 grayscale'}">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800">${l.title}</h4>
+                            <p class="text-[10px] text-gray-400">${l.url}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" ${l.active ? 'checked' : ''} onchange="toggleLink(${l.id})">
+                                <div class="w-8 h-4 bg-gray-200 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
+                            </label>
+                            <button onclick="openEditModal('link', ${l.id})" class="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><i data-lucide="edit-3" class="w-4"></i></button>
+                            <button onclick="deleteLink(${l.id})" class="p-2 text-gray-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            }
+        }
+
+        function openEditModal(type, id = null) {
+            currentEditing = { type, id };
+            const modal = document.getElementById('edit-modal');
+            const content = document.getElementById('modal-content');
+            const body = document.getElementById('modal-body');
+            const title = document.getElementById('modal-title');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.replace('scale-95', 'scale-100'), 10);
+            setTimeout(() => content.classList.replace('opacity-0', 'opacity-100'), 10);
+
+            let data = null;
+            if (type === 'profile_name') { title.innerText = 'Edit Nama'; data = appState.profile.name; }
+            else if (type === 'profile_bio') { title.innerText = 'Edit Bio'; data = appState.profile.bio; }
+            else if (type === 'link') { title.innerText = 'Edit Tautan'; data = appState.links.find(l => l.id === id); }
+            else if (type === 'profile_image') {
+                title.innerText = 'URL Foto Profil';
+                body.innerHTML = `<input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${appState.profile.image}">`;
+                return;
+            } else if (type === 'profile_banner') {
+                title.innerText = 'URL Banner Atas';
+                body.innerHTML = `<input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${appState.profile.banner}">`;
+                return;
+            } else if (type === 'theme_bg') {
+                title.innerText = 'Warna Latar Belakang';
+                body.innerHTML = `<input type="color" id="m-color" class="w-full h-24 rounded-2xl cursor-pointer" value="${appState.theme.bgColor}">`;
                 return;
             }
 
-            const payload = {
-                username,
-                password,
-                createdAt: new Date().toISOString(),
-                settings: { ...state.settings, namaToko },
-                links: []
-            };
+            selectedFontInModal = data.font || 'Inter';
 
-            await setDoc(accountDocRef, payload);
-            
-            syncToGAS('REGISTER', payload);
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Teks / Judul</label>
+                        <input type="text" id="m-text" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none" value="${data.text || data.title || ''}">
+                        ${type === 'link' ? `<input type="text" id="m-url" class="w-full p-4 bg-gray-50 border rounded-2xl mt-2 outline-none" value="${data.url}" placeholder="URL">` : ''}
+                    </div>
 
-            alert('Berhasil mendaftar! Data tersimpan di Cloud & Spreadsheet.');
-            window.navigate('login');
-        };
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Gaya Font</label>
+                        <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2 custom-scroll border p-2 rounded-2xl bg-gray-50">
+                            ${FONT_LIST.map(f => `
+                                <div onclick="selectFont('${f}')" id="font-${f.replace(/\s/g, '-')}" class="font-option text-sm ${selectedFontInModal === f ? 'selected' : ''}" style="font-family: '${f}'">${f}</div>
+                            `).join('')}
+                        </div>
+                    </div>
 
-        window.handleLogin = async (e) => {
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Warna Utama</label>
+                            <input type="color" id="m-color" class="w-full h-12 rounded-xl cursor-pointer" value="${data.color || data.bgColor || '#000000'}">
+                        </div>
+                        ${type === 'link' ? `
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Warna Kotak Tombol</label>
+                            <input type="color" id="m-color-bg" class="w-full h-12 rounded-xl cursor-pointer" value="${data.bgColor || '#003366'}">
+                        </div>
+                        ` : ''}
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-2">Ukuran</label>
+                            <select id="m-size" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                                <option value="text-xs" ${data.size === 'text-xs' ? 'selected' : ''}>XS</option>
+                                <option value="text-sm" ${data.size === 'text-sm' ? 'selected' : ''}>SM</option>
+                                <option value="text-base" ${data.size === 'text-base' ? 'selected' : ''}>Normal</option>
+                                <option value="text-lg" ${data.size === 'text-lg' ? 'selected' : ''}>Besar (LG)</option>
+                                <option value="text-xl" ${data.size === 'text-xl' ? 'selected' : ''}>Besar (XL)</option>
+                                <option value="text-2xl" ${data.size === 'text-2xl' ? 'selected' : ''}>Ekstra Besar</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectFont(f) {
+            selectedFontInModal = f;
+            document.querySelectorAll('.font-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`font-${f.replace(/\s/g, '-')}`).classList.add('selected');
+        }
+
+        function confirmEdit() {
+            const vText = document.getElementById('m-text')?.value;
+            const vUrl = document.getElementById('m-url')?.value;
+            const vColor = document.getElementById('m-color')?.value;
+            const vColorBg = document.getElementById('m-color-bg')?.value;
+            const vSize = document.getElementById('m-size')?.value;
+
+            if (currentEditing.type === 'profile_image') appState.profile.image = vText;
+            else if (currentEditing.type === 'profile_banner') appState.profile.banner = vText;
+            else if (currentEditing.type === 'theme_bg') appState.theme.bgColor = vColor;
+            else if (currentEditing.type === 'profile_name') {
+                appState.profile.name = { text: vText, font: selectedFontInModal, color: vColor, size: vSize };
+            } else if (currentEditing.type === 'profile_bio') {
+                appState.profile.bio = { text: vText, font: selectedFontInModal, color: vColor, size: vSize };
+            } else if (currentEditing.type === 'link') {
+                appState.links = appState.links.map(l => l.id === currentEditing.id ? {
+                    ...l, title: vText, url: vUrl, font: selectedFontInModal, color: vColor, bgColor: vColorBg, size: vSize
+                } : l);
+            }
+
+            applyAllStyles();
+            renderAll();
+            closeEditModal();
+        }
+
+        function closeEditModal() {
+            const m = document.getElementById('edit-modal');
+            const c = document.getElementById('modal-content');
+            c.classList.replace('scale-100', 'scale-95');
+            c.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 200);
+        }
+
+        function toggleLink(id) { appState.links = appState.links.map(l => l.id === id ? {...l, active: !l.active} : l); renderAll(); }
+        function deleteLink(id) { appState.links = appState.links.filter(l => l.id !== id); renderAll(); }
+        function addLink() { const id = Date.now(); appState.links.push({ id, title: 'Baru', url: '#', active: true, font: 'Inter', color: '#ffffff', bgColor: '#003366', size: 'text-base' }); renderAll(); openEditModal('link', id); }
+        
+        function navigate(v) { 
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden')); 
+            document.getElementById('view-' + v).classList.remove('hidden'); 
+            if(v === 'dashboard' && !isLoggedIn) navigate('login'); 
+            renderAll(); 
+        }
+        
+        function logout() { isLoggedIn = false; navigate('public'); }
+        function showLoading(s) { document.getElementById('loading-overlay').classList.toggle('hidden', !s); }
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.classList.replace('opacity-0', 'opacity-100'); setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 2000); }
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = e.target.username.value;
-            const password = e.target.password.value;
+            if (document.getElementById('password-input').value === ADMIN_PASS) { isLoggedIn = true; navigate('dashboard'); }
+            else { alert("Sandi salah!"); }
+        });
 
-            const accountDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'accounts', username);
-            const snap = await getDoc(accountDocRef);
-
-            if (snap.exists() && snap.data().password === password) {
-                state.currentUser = username;
-                state.settings = snap.data().settings || state.settings;
-                state.links = snap.data().links || [];
-                
-                syncToGAS('LOGIN', { username, timestamp: new Date().toISOString() });
-                
-                window.navigate('dashboard');
-            } else {
-                alert('Username atau Password salah!');
-            }
-        };
-
-        window.logoutAdmin = () => {
-            state.currentUser = null;
-            window.navigate('bio');
-        };
-
-        window.addLink = () => {
-            const name = document.getElementById('new-link-name').value;
-            const url = document.getElementById('new-link-url').value;
-            if (!name || !url) return;
-            state.links.push({ id: Date.now(), name, url });
-            saveToCloud();
-        };
-
-        window.deleteLink = (id) => {
-            state.links = state.links.filter(l => l.id !== id);
-            saveToCloud();
-        };
-
-        window.updateSetting = (key, value) => {
-            state.settings[key] = value;
-            saveToCloud();
-        };
-
-        window.updateSocial = (key, value) => {
-            state.settings.socialLinks[key] = value;
-            saveToCloud();
-        };
-
-        window.applyTemplate = (tpl) => {
-            state.settings.warnaBg = tpl.bg;
-            state.settings.warnaTulisan = tpl.text;
-            state.settings.linkStyle = tpl.style;
-            saveToCloud();
-        };
-
-        // --- Render UI ---
-
-        function render() {
-            const root = document.getElementById('app');
-            if (state.currentPage === 'bio') root.innerHTML = renderBio();
-            else if (state.currentPage === 'login') root.innerHTML = renderLogin();
-            else if (state.currentPage === 'register') root.innerHTML = renderRegister();
-            else if (state.currentPage === 'dashboard') root.innerHTML = renderDashboard();
-            lucide.createIcons();
-        }
-
-        function renderBio() {
-            const { settings, links } = state;
-            const socialIcons = Object.entries(settings.socialLinks)
-                .filter(([_, url]) => url)
-                .map(([key, url]) => `
-                    <a href="${url}" target="_blank" class="hover:scale-125 transition-all opacity-80 hover:opacity-100 p-2">
-                        <i data-lucide="${key === 'ig' ? 'instagram' : key === 'fb' ? 'facebook' : key === 'tiktok' ? 'music-2' : 'shopping-bag'}" style="color: ${settings.warnaTulisan}"></i>
-                    </a>
-                `).join('');
-
-            const linksHtml = links.map(link => {
-                let styleAttr = `background-color: #2D281D; color: white;`;
-                let classList = `block w-full py-4 px-6 text-center font-bold tracking-widest transition-all hover:scale-[1.02] shadow-lg`;
-                if (settings.linkStyle === 'rough') classList += ' style-rough';
-                if (settings.linkStyle === 'grunge') classList += ' style-grunge';
-                if (settings.linkStyle === 'metallic') { classList += ' style-metallic'; styleAttr = `background-color: #DC2626;`; }
-                if (settings.linkStyle === 'layered') { classList += ' style-layered'; styleAttr = `background-color: #FF9F1C;`; }
-                if (settings.linkStyle === 'custom' && settings.customStyleUrl) {
-                    styleAttr += ` -webkit-mask-image: url(${settings.customStyleUrl}); mask-image: url(${settings.customStyleUrl}); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background-color: #2D281D;`;
-                }
-                if (settings.linkStyle === 'rounded') classList += ' rounded-full';
-                if (settings.linkStyle === 'soft') classList += ' rounded-xl';
-                return `<a href="${link.url}" target="_blank" class="${classList}" style="${styleAttr}">${link.name}</a>`;
-            }).join('');
-
-            return `
-                <div class="flex flex-col items-center min-h-screen py-12 px-6 relative overflow-hidden">
-                    ${settings.fotoBackground ? `<img src="${settings.fotoBackground}" class="absolute inset-0 w-full h-full object-cover opacity-50 z-0">` : ''}
-                    <div class="w-full max-w-md relative z-10 flex flex-col items-center">
-                        <button onclick="window.navigate('login')" class="absolute top-0 right-0 p-2 rounded-full bg-black/10 hover:bg-black/20 transition-all">
-                            <i data-lucide="log-in" style="color: ${settings.warnaTulisan}"></i>
-                        </button>
-                        <div class="mb-12 flex flex-col items-center text-center">
-                            <div class="w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden mb-4 shadow-xl bg-gray-200 flex items-center justify-center">
-                                ${settings.fotoProfil ? `<img src="${settings.fotoProfil}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="text-gray-400"></i>`}
-                            </div>
-                            <h1 class="text-2xl font-bold tracking-wide" style="color: ${settings.warnaTulisan}">${settings.namaToko}</h1>
-                            <p class="mt-1 italic opacity-80" style="color: ${settings.warnaTulisan}">${settings.deskripsi}</p>
-                        </div>
-                        <div class="w-full space-y-8 mb-10">${linksHtml || `<p class="opacity-20 italic">Belum ada link</p>`}</div>
-                        <div class="flex flex-wrap justify-center gap-6">${socialIcons}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderLogin() {
-            return `
-                <div class="flex flex-col items-center justify-center min-h-screen px-6 bg-[#0E0B31] text-white">
-                    <div class="w-full max-w-md">
-                        <button onclick="window.navigate('bio')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
-                        <div class="bg-gradient-to-br from-[#1A1A40] to-[#100A31] p-10 rounded-3xl shadow-2xl border border-white/5">
-                            <h2 class="text-3xl font-bold text-center mb-10">Spreadsheet Login</h2>
-                            <form onsubmit="window.handleLogin(event)" class="space-y-6">
-                                <input name="username" type="text" placeholder="Username" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-4 outline-none focus:border-blue-500" required>
-                                <input name="password" type="password" placeholder="Password" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-4 outline-none focus:border-blue-500" required>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all">Masuk Akun</button>
-                            </form>
-                            <div class="mt-8 text-center pt-6 border-t border-white/5">
-                                <button onclick="window.navigate('register')" class="text-sm text-blue-400 font-bold hover:underline">Daftar Akun Baru</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderRegister() {
-            return `
-                <div class="flex flex-col items-center justify-center min-h-screen px-6 bg-[#0E0B31] text-white">
-                    <div class="w-full max-w-md">
-                        <button onclick="window.navigate('login')" class="flex items-center gap-2 text-white/50 hover:text-white mb-8 font-bold"><i data-lucide="arrow-left"></i> Kembali</button>
-                        <div class="bg-gradient-to-br from-[#1A1A40] to-[#100A31] p-10 rounded-3xl shadow-2xl border border-white/5">
-                            <h2 class="text-3xl font-bold text-center mb-10">Registrasi Akun</h2>
-                            <form onsubmit="window.handleRegister(event)" class="space-y-4">
-                                <input name="username" type="text" placeholder="Username" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
-                                <input name="namaToko" type="text" placeholder="Nama Toko / Judul Bio" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
-                                <input name="password" type="password" placeholder="Password" class="w-full bg-[#0E0B31] border border-white/10 rounded-xl p-3 outline-none focus:border-blue-500" required>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase transition-all mt-4">Buat Akun & Simpan</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderDashboard() {
-            const { settings, links, activeTab, allAccounts } = state;
-            let content = '';
-
-            if (activeTab === 'panel') {
-                content = `
-                    <h1 class="text-4xl font-light mb-10">Panel Link</h1>
-                    <div class="flex items-end gap-6 mb-16 p-8 bg-white/5 rounded-2xl border border-white/5 shadow-xl">
-                        <div class="flex-1">
-                            <label class="block text-[10px] uppercase text-white/40 mb-3 font-bold">Nama Link</label>
-                            <input id="new-link-name" type="text" placeholder="Contoh: Shopee Store" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-4 outline-none text-white">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-[10px] uppercase text-white/40 mb-3 font-bold">URL / Link</label>
-                            <input id="new-link-url" type="text" placeholder="https://..." class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-4 outline-none text-white">
-                        </div>
-                        <button onclick="window.addLink()" class="bg-blue-600 text-white rounded-lg p-[18px] hover:bg-blue-500 shadow-lg"><i data-lucide="plus"></i></button>
-                    </div>
-                    <div class="space-y-4">
-                        ${links.map((link, i) => `
-                            <div class="flex items-center justify-between border border-white/10 bg-white/5 rounded-2xl p-6 group">
-                                <div class="flex items-center gap-6">
-                                    <span class="text-2xl font-light text-white/10">${i + 1}</span>
-                                    <div>
-                                        <h4 class="font-bold text-lg text-white">${link.name}</h4>
-                                        <p class="text-sm text-blue-400 font-mono italic opacity-70">${link.url}</p>
-                                    </div>
-                                </div>
-                                <button onclick="window.deleteLink(${link.id})" class="p-3 text-white/20 hover:text-red-400"><i data-lucide="trash-2"></i></button>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            } else if (activeTab === 'spreadsheet') {
-                content = `
-                    <h1 class="text-4xl font-light mb-10 text-white">Database View (Cloud)</h1>
-                    <div class="glass rounded-2xl overflow-hidden shadow-2xl">
-                        <table class="w-full text-left text-sm text-white">
-                            <thead class="bg-white/5 text-white/60 uppercase text-[10px] font-black">
-                                <tr>
-                                    <th class="px-6 py-4">Username</th>
-                                    <th class="px-6 py-4">Nama Toko</th>
-                                    <th class="px-6 py-4">Daftar Link</th>
-                                    <th class="px-6 py-4">Terakhir Update</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5">
-                                ${allAccounts.map(acc => `
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-6 py-4 font-bold text-blue-400">${acc.username}</td>
-                                        <td class="px-6 py-4 text-white/80">${acc.settings?.namaToko || '-'}</td>
-                                        <td class="px-6 py-4 text-white/40">${acc.links?.length || 0} Link Aktif</td>
-                                        <td class="px-6 py-4 text-[10px] font-mono opacity-30">${acc.lastUpdated || acc.createdAt || '-'}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } else if (activeTab === 'settings') {
-                content = `
-                    <h1 class="text-4xl font-light mb-10">Pengaturan</h1>
-                    <div class="space-y-10">
-                        <div class="grid grid-cols-2 gap-8 bg-white/5 p-8 rounded-2xl border border-white/5">
-                            <div class="space-y-4">
-                                <label class="block text-[10px] font-bold text-white/40 uppercase">Judul Bio</label>
-                                <input type="text" value="${settings.namaToko}" onchange="window.updateSetting('namaToko', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
-                                <label class="block text-[10px] font-bold text-white/40 uppercase">Deskripsi</label>
-                                <input type="text" value="${settings.deskripsi}" onchange="window.updateSetting('deskripsi', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
-                            </div>
-                            <div class="space-y-4">
-                                <label class="block text-[10px] font-bold text-white/40 uppercase">URL Foto Profil</label>
-                                <input type="text" value="${settings.fotoProfil}" onchange="window.updateSetting('fotoProfil', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white">
-                                <label class="block text-[10px] font-bold text-white/40 uppercase">GAS URL</label>
-                                <input type="text" value="${settings.gasUrl || ''}" placeholder="URL Google Apps Script" onchange="window.updateSetting('gasUrl', this.value)" class="w-full bg-[#1A1A40] border border-white/10 rounded-lg p-3 text-white text-xs">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            return `
-                <div class="flex min-h-screen bg-[#0E0B31] text-white overflow-hidden">
-                    <div class="w-72 bg-gradient-to-b from-[#3D4DA0] to-[#606FC0] flex flex-col py-10 shadow-2xl z-20">
-                        <div class="flex flex-col items-center mb-12 px-6 text-center">
-                            <div class="w-24 h-24 rounded-full border-4 border-white mb-4 object-cover shadow-lg overflow-hidden bg-white/10 flex items-center justify-center">
-                                ${settings.fotoProfil ? `<img src="${settings.fotoProfil}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="text-white/30"></i>`}
-                            </div>
-                            <h3 class="font-bold text-2xl truncate w-full px-2">${settings.namaToko}</h3>
-                            <p class="text-[10px] text-white/50 uppercase tracking-widest mt-1 truncate w-full px-4">${state.currentUser}</p>
-                        </div>
-                        <nav class="flex-1 px-4 space-y-1">
-                            <div onclick="window.setTab('panel')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'panel' ? 'bg-white/10 font-bold' : 'text-white/50'}">
-                                ${activeTab === 'panel' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
-                                <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
-                            </div>
-                            <div onclick="window.setTab('spreadsheet')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'spreadsheet' ? 'bg-white/10 font-bold' : 'text-white/50'}">
-                                ${activeTab === 'spreadsheet' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
-                                <i data-lucide="table"></i><span>Data Log</span>
-                            </div>
-                            <div onclick="window.setTab('settings')" class="flex items-center gap-4 px-8 py-4 cursor-pointer relative ${activeTab === 'settings' ? 'bg-white/10 font-bold' : 'text-white/50'}">
-                                ${activeTab === 'settings' ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-white"></div>' : ''}
-                                <i data-lucide="settings"></i><span>Pengaturan</span>
-                            </div>
-                        </nav>
-                        <button onclick="window.logoutAdmin()" class="mt-auto flex items-center gap-4 text-white/60 hover:text-white px-8 py-4 group font-bold">
-                            <i data-lucide="log-in" class="rotate-180"></i> <span class="font-medium">Keluar</span>
-                        </button>
-                    </div>
-
-                    <div class="flex-1 flex flex-col">
-                        <div class="h-16 flex items-center justify-end px-10 border-b border-white/5">
-                            <button onclick="window.navigate('bio')" class="text-white/40 hover:text-white transition-colors p-1"><i data-lucide="x"></i></button>
-                        </div>
-                        <div class="flex-1 overflow-y-auto p-12 custom-scrollbar">${content}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        init();
+        window.onload = init;
     </script>
 </body>
 </html>
