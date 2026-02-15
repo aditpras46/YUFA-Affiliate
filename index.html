@@ -29,6 +29,37 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+            background-color: #002244;
+        }
+
+        /* Container tombol untuk pengaturan posisi ikon dan teks */
+        .btn-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background-color: #003366;
+            color: white;
+            padding: 1rem 0;
+            border-radius: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* Ikon tas diposisikan secara absolut di sisi kiri agar sejajar lurus ke bawah */
+        .btn-icon {
+            position: absolute;
+            left: 1.5rem; /* Jarak tetap dari kiri */
+            font-size: 1.1rem;
+        }
+
+        /* Teks tetap di tengah, dengan padding agar tidak menabrak ikon pada layar kecil */
+        .btn-text {
+            width: 100%;
+            text-align: center;
+            padding: 0 3.5rem;
+            font-size: 0.875rem; /* text-sm */
         }
     </style>
 </head>
@@ -39,12 +70,10 @@
         
         <!-- Header Background -->
         <div class="h-48 w-full relative overflow-hidden">
-            <!-- Gambar Header -->
             <img src="https://image2url.com/r2/default/images/1770848563076-99986d4d-ee7c-4d7e-aae8-de4cb6942a13.png" 
                  alt="Yufa Affiliate Header" 
                  class="w-full h-full object-cover opacity-90"
                  onerror="this.src='https://via.placeholder.com/800x400?text=Fashion+Banner'">
-            <!-- Overlay Gradien -->
             <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#e3ebf3]"></div>
         </div>
 
@@ -66,49 +95,42 @@
                 </p>
             </div>
 
-            <!-- Daftar Link (Tombol) -->
+            <!-- Daftar Link (Tombol dengan Ikon Sejajar) -->
             <div class="w-full mt-10 space-y-4 pb-12">
                 
-                <!-- Link Shopee #1 -->
-                <a href="https://s.shopee.co.id/6pvBRSAXlo" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    1. Gamis Lebaran Anak Motif Terbaru
+                <a href="https://s.shopee.co.id/6pvBRSAXlo" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">1. Gamis Lebaran Anak Motif Terbaru</span>
                 </a>
 
-                <!-- Link Shopee #2 -->
-                <a href="https://s.shopee.co.id/4AuQHyOKhQ" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    2. Setelan 3in1 Anak 3-12 tahun
+                <a href="https://s.shopee.co.id/4AuQHyOKhQ" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">2. Setelan 3in1 Anak 3-12 tahun</span>
                 </a>
 
-                <!-- Link Shopee #3 -->
-                <a href="https://s.shopee.co.id/2g5cenA11q" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    3. Arabia Dress Silk Premium Gamis Dewasa
+                <a href="https://s.shopee.co.id/2g5cenA11q" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">3. Arabia Dress Silk Premium</span>
                 </a>
 
-                <!-- Link Shopee #4 -->
-                <a href="https://s.shopee.co.id/2VmI5v6SDt" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    4. Gamis Laura Couple Mom & Kids Dress Rompi
+                <a href="https://s.shopee.co.id/2VmI5v6SDt" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">4. Gamis Laura Couple Mom & Kids</span>
                 </a>
 
-                <!-- Link Shopee #5 -->
-                <a href="https://s.shopee.co.id/807EeF1mZS" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    5. Gamis outer abaya mewah gamis lebaran
+                <a href="https://s.shopee.co.id/807EeF1mZS" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">5. Gamis outer abaya mewah</span>
                 </a>
 
-                <!-- Link Shopee #6 -->
-                <a href="https://s.shopee.co.id/7VAy3R5jsH" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    6. Naomi Vest Set-Set Blazer Wanita
+                <a href="https://s.shopee.co.id/7VAy3R5jsH" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">6. Naomi Vest Set-Set Blazer Wanita</span>
                 </a>
 
-                <!-- Link Shopee #7 -->
-                <a href="https://s.shopee.co.id/4qACsb58Eb" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#003366] text-white py-4 rounded-lg text-center font-bold tracking-wider hover-scale btn-shadow uppercase">
-                    <i class="fas fa-shopping-bag"></i>
-                    7. Devara Set Setelan Wanita Knit Premium One Set
+                <a href="https://s.shopee.co.id/4qACsb58Eb" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">7. Devara Set Setelan Wanita</span>
                 </a>
 
             </div>
