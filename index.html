@@ -23,10 +23,10 @@
         }
         
         .hover-scale {
-            transition: all 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out;
         }
         .hover-scale:hover {
-            transform: translateY(-2px);
+            transform: scale(1.02);
             background-color: #002244;
         }
 
@@ -56,7 +56,6 @@
             text-align: center;
             padding: 0 3.5rem;
             font-size: 0.875rem;
-            line-height: 1.2;
         }
 
         /* Modal Overlay Styles */
@@ -69,47 +68,11 @@
             justify-content: center;
             z-index: 100;
             backdrop-filter: blur(4px);
-            padding: 1rem;
         }
 
         .modal-overlay.active {
             display: flex;
         }
-
-        /* Admin Action Buttons */
-        .admin-actions {
-            position: absolute;
-            right: -8px;
-            top: -8px;
-            display: flex;
-            gap: 4px;
-            z-index: 20;
-        }
-
-        .delete-btn {
-            background: #ef4444;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #003366;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -117,9 +80,9 @@
     <!-- Container Utama -->
     <div class="w-full max-w-md bg-[#e3ebf3] min-h-screen shadow-2xl relative flex flex-col overflow-hidden">
         
-        <!-- Tombol Tambah (+) -->
+        <!-- Tombol Tambah (+) - Sekarang di Pojok Atas Samar -->
         <button id="add-btn" class="absolute top-4 right-4 w-10 h-10 bg-gray-400/20 text-gray-500 rounded-full flex items-center justify-center text-lg hover:bg-gray-400/40 transition-all z-50">
-            <i class="fas fa-cog"></i>
+            <i class="fas fa-plus"></i>
         </button>
 
         <!-- Header Background -->
@@ -127,7 +90,7 @@
             <img src="https://image2url.com/r2/default/images/1770848563076-99986d4d-ee7c-4d7e-aae8-de4cb6942a13.png" 
                  alt="Yufa Affiliate Header" 
                  class="w-full h-full object-cover opacity-90"
-                 onerror="this.src='https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800'">
+                 onerror="this.src='https://via.placeholder.com/800x400?text=Fashion+Banner'">
             <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#e3ebf3]"></div>
         </div>
 
@@ -138,7 +101,7 @@
                 <img src="https://cdn.phototourl.com/uploads/2026-02-18-e1dca9ce-d5f8-4980-a407-96ed444ee887.png" 
                      alt="Yufa Affiliate Profile" 
                      class="w-full h-full object-contain p-1"
-                     onerror="this.src='https://ui-avatars.com/api/?name=Yufa+Affiliate&background=003366&color=fff'">
+                     onerror="this.src='https://via.placeholder.com/150?text=YUFA'">
             </div>
 
             <!-- Nama & Bio -->
@@ -151,9 +114,38 @@
 
             <!-- Daftar Link -->
             <div id="links-container" class="w-full mt-10 space-y-4 pb-20">
-                <div class="flex justify-center py-10" id="main-loader">
-                    <div class="loader"></div>
-                </div>
+                <a href="https://s.shopee.co.id/6pvBRSAXlo" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">1. Gamis Lebaran Anak Motif Terbaru</span>
+                </a>
+                <a href="https://s.shopee.co.id/4AuQHyOKhQ" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">2. Setelan 3in1 Anak 3-12 tahun</span>
+                </a>
+                <a href="https://s.shopee.co.id/2g5cenA11q" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">3. Arabia Dress Silk Premium</span>
+                </a>
+                <a href="https://s.shopee.co.id/8zzkpkSKwu?share_channel_code=1" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">4. DENARA DRESS Gamis Muslim Brukat Wanita</span>
+                </a>
+                <a href="https://s.shopee.co.id/2VmI5v6SDt" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">5. Gamis Laura Couple Mom & Kids</span>
+                </a>
+                <a href="https://s.shopee.co.id/807EeF1mZS" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">6. Gamis outer abaya mewah</span>
+                </a>
+                <a href="https://s.shopee.co.id/7VAy3R5jsH" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">7. Naomi Vest Set-Set Blazer Wanita</span>
+                </a>
+                <a href="https://s.shopee.co.id/4qACsb58Eb" target="_blank" class="btn-link btn-shadow hover-scale">
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">8. Devara Set Setelan Wanita</span>
+                </a>
             </div>
 
             <!-- Footer Branding -->
@@ -166,215 +158,116 @@
     <!-- Modal Login -->
     <div id="login-modal" class="modal-overlay">
         <div class="bg-white w-80 p-6 rounded-xl shadow-2xl">
-            <h2 class="text-xl font-bold text-[#003366] mb-4 text-center">Admin Access</h2>
+            <h2 class="text-xl font-bold text-[#003366] mb-4 text-center">Login Dashboard</h2>
             <div class="space-y-4">
-                <input type="password" id="login-password" placeholder="Masukkan Password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366] text-center">
+                <input type="password" id="login-password" placeholder="Masukkan Password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366]">
                 <p id="login-error" class="text-red-500 text-xs hidden text-center">Password salah!</p>
                 <div class="flex gap-2">
                     <button id="close-login" class="flex-1 py-2 text-gray-500 font-medium">Batal</button>
                     <button id="submit-login" class="flex-1 py-2 bg-[#003366] text-white rounded-lg font-bold">Masuk</button>
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-gray-400 text-center italic">Hint: 230697</p>
+            <p class="mt-4 text-[10px] text-gray-400 text-center">Hint: 230697</p>
         </div>
     </div>
 
-    <!-- Modal Dashboard -->
+    <!-- Modal Dashboard (Tambah Link) -->
     <div id="dashboard-modal" class="modal-overlay">
-        <div class="bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-[#003366]">Dashboard</h2>
+                <h2 class="text-xl font-bold text-[#003366]">Dashboard Link</h2>
                 <button id="logout-btn" class="text-red-500 text-sm font-bold uppercase">Logout</button>
             </div>
             <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">Tambah Produk</h3>
-                    <div class="space-y-3">
-                        <input type="text" id="new-title" placeholder="Nama Produk" class="w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366]">
-                        <input type="url" id="new-url" placeholder="URL Shopee (https://...)" class="w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366]">
-                        <button id="save-link" class="w-full py-3 bg-[#003366] text-white rounded-lg font-bold shadow-lg hover:bg-[#002244] transition-all flex justify-center items-center gap-2">
-                            <span>SIMPAN LINK</span>
-                        </button>
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Judul Produk</label>
+                    <input type="text" id="new-title" placeholder="Contoh: Gamis Anak" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366]">
                 </div>
-
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">URL Shopee</label>
+                    <input type="url" id="new-url" placeholder="https://s.shopee.co.id/..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366]">
+                </div>
+                <button id="save-link" class="w-full py-3 bg-[#003366] text-white rounded-lg font-bold shadow-lg hover:bg-[#002244] transition-all">
+                    SIMPAN LINK BARU
+                </button>
                 <button id="close-dashboard" class="w-full py-2 text-gray-400 text-sm">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Logic -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-
-        // --- KONFIGURASI UNTUK GITHUB ---
-        // Jika Anda memindahkan ini ke GitHub, ganti isi objek di bawah dengan konfigurasi dari Firebase Console Anda
-        let firebaseConfig;
-        try {
-            if (typeof __firebase_config !== 'undefined') {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } else {
-                firebaseConfig = {
-                    apiKey: "MASUKKAN_API_KEY_ANDA",
-                    authDomain: "PROJECT_ID_ANDA.firebaseapp.com",
-                    projectId: "PROJECT_ID_ANDA",
-                    storageBucket: "PROJECT_ID_ANDA.appspot.com",
-                    messagingSenderId: "SENDER_ID_ANDA",
-                    appId: "APP_ID_ANDA"
-                };
-            }
-        } catch (e) {
-            console.error("Gagal memuat konfigurasi Firebase.");
-        }
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // App ID untuk membedakan data di database
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'yufa-affiliate-v1';
-
-        // UI References
+    <script>
         const addBtn = document.getElementById('add-btn');
         const loginModal = document.getElementById('login-modal');
         const dashboardModal = document.getElementById('dashboard-modal');
         const linksContainer = document.getElementById('links-container');
-        const loginPass = document.getElementById('login-password');
         
-        let currentUser = null;
-        let isAdmin = false;
-        let currentLinks = [];
+        let isLoggedIn = false;
 
-        // Auth Flow
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Authentication Error:", err);
+        // Fungsi buka modal
+        addBtn.addEventListener('click', () => {
+            if (isLoggedIn) {
+                dashboardModal.classList.add('active');
+            } else {
+                loginModal.classList.add('active');
+                document.getElementById('login-password').focus();
             }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) loadLinks();
         });
 
-        initAuth();
-
-        // Firestore Functions
-        function loadLinks() {
-            const linksRef = collection(db, 'artifacts', appId, 'public', 'data', 'links');
-            onSnapshot(linksRef, (snapshot) => {
-                const links = [];
-                snapshot.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
-                
-                // Urutkan berdasarkan waktu buat
-                links.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-                currentLinks = links;
-                renderLinks(links);
-                const loader = document.getElementById('main-loader');
-                if (loader) loader.remove();
-            }, (error) => {
-                console.error("Error loading links:", error);
-                document.getElementById('links-container').innerHTML = '<p class="text-center text-red-500 text-xs">Gagal memuat data. Periksa konfigurasi Firebase Anda.</p>';
-            });
-        }
-
-        function renderLinks(links) {
-            linksContainer.innerHTML = '';
-            if (links.length === 0 && !document.getElementById('main-loader')) {
-                linksContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Belum ada link produk.</p>';
-                return;
-            }
+        // Handle Login (Sesuai dengan Hint: 230697)
+        document.getElementById('submit-login').addEventListener('click', () => {
+            const passInput = document.getElementById('login-password');
+            const errorMsg = document.getElementById('login-error');
             
-            links.forEach((link, index) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = "relative group";
-                
-                wrapper.innerHTML = `
-                    <a href="${link.url}" target="_blank" class="btn-link btn-shadow hover-scale">
-                        <i class="fas fa-shopping-bag btn-icon"></i>
-                        <span class="btn-text">${index + 1}. ${link.title}</span>
-                    </a>
-                    ${isAdmin ? `
-                        <div class="admin-actions">
-                            <button class="delete-btn" onclick="window.removeLink('${link.id}')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    ` : ''}
-                `;
-                linksContainer.appendChild(wrapper);
-            });
-        }
-
-        window.removeLink = async (id) => {
-            if (!confirm('Hapus link ini?')) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'links', id));
-            } catch (e) { alert('Gagal menghapus'); }
-        };
-
-        // UI Interactions
-        addBtn.onclick = () => {
-            if (isAdmin) dashboardModal.classList.add('active');
-            else loginModal.classList.add('active');
-        };
-
-        document.getElementById('submit-login').onclick = () => {
-            if (loginPass.value === '230697') {
-                isAdmin = true;
+            if (passInput.value === '230697') {
+                isLoggedIn = true;
                 loginModal.classList.remove('active');
                 dashboardModal.classList.add('active');
-                loginPass.value = '';
-                document.getElementById('login-error').classList.add('hidden');
-                renderLinks(currentLinks);
+                passInput.value = '';
+                errorMsg.classList.add('hidden');
             } else {
-                document.getElementById('login-error').classList.remove('hidden');
+                errorMsg.classList.remove('hidden');
             }
-        };
+        });
 
-        document.getElementById('logout-btn').onclick = () => {
-            isAdmin = false;
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            isLoggedIn = false;
             dashboardModal.classList.remove('active');
-            renderLinks(currentLinks);
-        };
+        });
 
-        document.getElementById('save-link').onclick = async () => {
+        // Simpan Link Baru
+        document.getElementById('save-link').addEventListener('click', () => {
             const titleInput = document.getElementById('new-title');
             const urlInput = document.getElementById('new-url');
-            const saveBtn = document.getElementById('save-link');
-
-            if (!titleInput.value || !urlInput.value) return;
-
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<div class="loader" style="border-top-color:white"></div>';
-
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'links'), {
-                    title: titleInput.value,
-                    url: urlInput.value,
-                    createdAt: serverTimestamp()
-                });
+            
+            if (titleInput.value && urlInput.value) {
+                const linkCount = linksContainer.querySelectorAll('a').length + 1;
+                
+                const newAnchor = document.createElement('a');
+                newAnchor.href = urlInput.value;
+                newAnchor.target = "_blank";
+                newAnchor.className = "btn-link btn-shadow hover-scale";
+                newAnchor.innerHTML = `
+                    <i class="fas fa-shopping-bag btn-icon"></i>
+                    <span class="btn-text">${linkCount}. ${titleInput.value}</span>
+                `;
+                
+                linksContainer.appendChild(newAnchor);
+                
                 titleInput.value = '';
                 urlInput.value = '';
-            } catch (e) { 
-                console.error(e);
-                alert('Gagal menyimpan. Pastikan aturan (Rules) Firestore Anda mengizinkan penulisan.'); 
+                
+                const originalText = document.getElementById('save-link').innerText;
+                document.getElementById('save-link').innerText = "BERHASIL DITAMBAHKAN!";
+                setTimeout(() => {
+                    document.getElementById('save-link').innerText = originalText;
+                }, 1500);
             }
-            
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = '<span>SIMPAN LINK</span>';
-        };
+        });
 
-        document.getElementById('close-login').onclick = () => loginModal.classList.remove('active');
-        document.getElementById('close-dashboard').onclick = () => dashboardModal.classList.remove('active');
+        // Close Modals
+        document.getElementById('close-login').addEventListener('click', () => loginModal.classList.remove('active'));
+        document.getElementById('close-dashboard').addEventListener('click', () => dashboardModal.classList.remove('active'));
     </script>
 
 </body>
