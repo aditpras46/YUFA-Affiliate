@@ -209,11 +209,31 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // Initialize Firebase
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // --- KONFIGURASI UNTUK GITHUB ---
+        // Jika Anda memindahkan ini ke GitHub, ganti isi objek di bawah dengan konfigurasi dari Firebase Console Anda
+        let firebaseConfig;
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                firebaseConfig = {
+                    apiKey: "MASUKKAN_API_KEY_ANDA",
+                    authDomain: "PROJECT_ID_ANDA.firebaseapp.com",
+                    projectId: "PROJECT_ID_ANDA",
+                    storageBucket: "PROJECT_ID_ANDA.appspot.com",
+                    messagingSenderId: "SENDER_ID_ANDA",
+                    appId: "APP_ID_ANDA"
+                };
+            }
+        } catch (e) {
+            console.error("Gagal memuat konfigurasi Firebase.");
+        }
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
+        // App ID untuk membedakan data di database
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'yufa-affiliate-v1';
 
         // UI References
@@ -229,10 +249,14 @@
 
         // Auth Flow
         const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Authentication Error:", err);
             }
         };
 
@@ -250,16 +274,25 @@
                 const links = [];
                 snapshot.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
                 
-                // Sort in memory
+                // Urutkan berdasarkan waktu buat
                 links.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
                 currentLinks = links;
                 renderLinks(links);
-                document.getElementById('main-loader')?.remove();
-            }, (error) => console.error(error));
+                const loader = document.getElementById('main-loader');
+                if (loader) loader.remove();
+            }, (error) => {
+                console.error("Error loading links:", error);
+                document.getElementById('links-container').innerHTML = '<p class="text-center text-red-500 text-xs">Gagal memuat data. Periksa konfigurasi Firebase Anda.</p>';
+            });
         }
 
         function renderLinks(links) {
             linksContainer.innerHTML = '';
+            if (links.length === 0 && !document.getElementById('main-loader')) {
+                linksContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Belum ada link produk.</p>';
+                return;
+            }
+            
             links.forEach((link, index) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = "relative group";
@@ -331,7 +364,10 @@
                 });
                 titleInput.value = '';
                 urlInput.value = '';
-            } catch (e) { alert('Gagal menyimpan'); }
+            } catch (e) { 
+                console.error(e);
+                alert('Gagal menyimpan. Pastikan aturan (Rules) Firestore Anda mengizinkan penulisan.'); 
+            }
             
             saveBtn.disabled = false;
             saveBtn.innerHTML = '<span>SIMPAN LINK</span>';
